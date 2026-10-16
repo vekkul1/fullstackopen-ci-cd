@@ -17,7 +17,7 @@ module.exports = [
   },
   js.configs.recommended,
   {
-    files: ['app.js'],
+    files: ['app.js', 'e2e-tests/*'],
     languageOptions: {
       ecmaVersion: 2018,
       sourceType: 'commonjs',
