@@ -24,5 +24,4 @@ jobs:
       - name: commit messages
         env:
           COMMIT_MESSAGES: ${{ join(toJson(github.event.commits.*.message), ',') }}
-          COMMIT_BOOL: ${{  contains(join(toJSON(github.event.commits.*.message), ','), "#skip")}}
-        run: echo "$COMMIT_BOOL"
+        run: echo "$COMMIT_MESSAGES"
