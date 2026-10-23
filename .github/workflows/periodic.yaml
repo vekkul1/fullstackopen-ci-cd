@@ -1,0 +1,17 @@
+name: Periodic Hello
+
+on:
+  workflow_dispatch:
+    schedule:
+      -- cron: '0 12 * * *'
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "hello"
+      - uses: jtalk/url-health-check-action@v5
+        with:
+          url: https://fullstackopen-ci-cd-uwd3.onrender.com/health
+          max-attemps: 3
+          retry-delay: 10s
