@@ -49,9 +49,8 @@ jobs:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
           content: '*Build Failed*'
           description: |
-            Commit: `${{ github.event.commits.*.id }}`
-            Message: `${{ github.event.commits.*.message }}`
-            Author: `${{ github.event.commits.*.author.username }}`
+            Commit: `${{ join(github.event.commits.*.id, ', ') }}`
+            Message: `${{ join(github.event.commits.*.message, ', ') }}`
 
   tag_release:
     if: ${{ !contains(join(github.event.commits.*.message, ','), '#skip') &&  github.event_name == 'push' }}
