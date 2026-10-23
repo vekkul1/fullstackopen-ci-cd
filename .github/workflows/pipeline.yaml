@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -34,27 +34,19 @@ jobs:
           retention-days: 30
       - name: Run npm build
         run: npm run build
+
+  deploy:
+    if: ${{ always() }}
+    needs: [build_and_test]
+    runs-on: ubuntu-latest
+    steps:
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
-      - name: Positive Discord Notification
-        if: ${{ success() && github.event_name == 'push' }}
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-      - name: Negative Discord Notification
-        if: ${{ !success() && github.event_name == 'push' }}
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          content: '*Build Failed*'
-          description: |
-            Commit: `${{ join(github.event.commits.*.id, ', ') }}`
-            Message: `${{ join(github.event.commits.*.message, ', ') }}`
 
   tag_release:
     if: ${{ !contains(join(github.event.commits.*.message, ','), '#skip') &&  github.event_name == 'push' }}
-    needs: [simple_deployment_pipeline]
+    needs: [build_and_test, deploy]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -66,3 +58,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+
+  notify_success:
+    if: ${{ success() && github.event_name == 'push' }}
+    needs: [build_and_test, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Positive Discord Notification
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+
+  notify_failure:
+    if: ${{ !success() && github.event_name == 'push' }}
+    needs: [build_and_test, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Negative Discord Notification
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          content: '*Build Failed*'
+          description: |
+            Commit: `${{ join(github.event.commits.*.id, ', ') }}`
+            Message: `${{ join(github.event.commits.*.message, ', ') }}`
