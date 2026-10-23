@@ -29,7 +29,7 @@ describe('<App />', () => {
     })
     expect(axiosMock.get).toHaveBeenCalledTimes(1)
     expect(axiosMock.get).toHaveBeenCalledWith(
-      'https://pokeapi.co/api/v2/pokemon/?limit=55',
+      'https://pokeapi.co/api/v2/pokemon/?limit=50',
     )
   })
 
