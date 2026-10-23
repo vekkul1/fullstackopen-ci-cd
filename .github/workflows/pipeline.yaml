@@ -38,12 +38,12 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
       - name: Positive Discord Notification
-        if: ${{ success() }}
+        if: ${{ success() && github.event_name == 'push' }}
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
       - name: Negative Discord Notification
-        if: ${{ failure() }}
+        if: ${{ failure() && github.event_name == 'push' }}
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
