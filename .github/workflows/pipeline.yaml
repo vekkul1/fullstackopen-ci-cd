@@ -36,12 +36,11 @@ jobs:
         run: npm run build
 
   deploy:
-    if: ${{ always() }}
+    if: ${{ github.event_name == 'push' }}
     needs: [build_and_test]
     runs-on: ubuntu-latest
     steps:
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' }}
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
 
   tag_release:
@@ -78,7 +77,8 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: Failure
           content: '*Build Failed*'
           description: |
-            Commit: `${{ join(github.event.commits.*.id, ', ') }}`
-            Message: `${{ join(github.event.commits.*.message, ', ') }}`
+            Commit: `${{ join(github.event.commits.*.id, '<br /> ') }}`
+            Message: `${{ join(github.event.commits.*.message, '<br />') }}`
