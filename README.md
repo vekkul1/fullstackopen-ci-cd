@@ -7,6 +7,10 @@ https://github.com/fullstack-hy2020/fs-pokedex
 
 https://fullstackopen-ci-cd-uwd3.onrender.com/
 
+# Other repo:
+
+https://github.com/vekkul1/fullstackopen-phonebook
+
 ## Commands
 
 Start by running `npm install` inside the project folder
